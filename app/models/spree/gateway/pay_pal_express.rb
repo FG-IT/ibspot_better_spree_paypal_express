@@ -45,7 +45,6 @@ module Spree
     def settle(amount, checkout, _gateway_options) end
 
     def capture(credit_cents, transaction_id, _gateway_options)
-
       payment_id = _gateway_options[:order_id].split('-')[-1]
       payment = Spree::Payment.find_by(number: payment_id)
       transaction_id = payment.source.transaction_id
@@ -71,9 +70,7 @@ module Spree
           new_transaction_id = pp_response.do_capture_response_details.payment_info.transaction_id
         end
 
-
         Spree::PaypalExpressCheckout.find_by(transaction_id: transaction_id).update(state: 'completed', transaction_id: new_transaction_id)
-
         Response.new(true, nil, {:id => new_transaction_id})
       else
         class << pp_response
@@ -117,9 +114,7 @@ module Spree
       void_transaction = provider.build_do_void({
                                                     :AuthorizationID => source.transaction_id
                                                 })
-
       do_void_response = provider.do_void(void_transaction)
-
 
       if do_void_response.success?
         Spree::PaypalExpressCheckout.find_by(transaction_id: source.transaction_id).update(state: 'voided')
@@ -139,7 +134,6 @@ module Spree
             errors.map(&:long_message).join(" ")
           end
         end
-
         Response.new(false, do_void_response, {})
       end
     end
@@ -148,7 +142,6 @@ module Spree
       unless transaction_id.present?
         transaction_id = payment.source.transaction_id
       end
-
       refund_type = payment.money.amount_in_cents == credit_cents ? "Full" : "Partial"
       params = {
           :TransactionID => transaction_id,
@@ -157,8 +150,6 @@ module Spree
               :currencyID => payment.currency,
               :value => credit_cents.to_f / 100},
           :RefundSource => "any"}
-
-
       refund_transaction = provider.build_refund_transaction(params)
       refund_transaction_response = provider.refund_transaction(refund_transaction)
       if refund_transaction_response.success?
@@ -175,12 +166,9 @@ module Spree
             errors.map(&:long_message).join(" ")
           end
         end
-
         Response.new(false, refund_transaction_response, {})
       end
-
     end
-
 
     private
 
@@ -201,7 +189,6 @@ module Spree
 
       pp_response = provider.do_express_checkout_payment(pp_request)
 
-
       if pp_response.success?
         # We need to store the transaction id for the future.
         # This is mainly so we can use it later on to refund the payment if the user wishes.
@@ -212,9 +199,7 @@ module Spree
         end
 
         express_checkout.update_column(:transaction_id, transaction_id)
-
         Response.new(true, nil, {:id => transaction_id})
-
       else
         class << pp_response
           def to_s
@@ -223,7 +208,6 @@ module Spree
         end
 
         Response.new(false, pp_response, {})
-
       end
     end
   end
