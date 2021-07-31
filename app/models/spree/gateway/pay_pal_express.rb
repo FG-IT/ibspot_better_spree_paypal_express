@@ -93,8 +93,11 @@ module Spree
       if response_code.nil?
         source = _source
       else
-        source = Spree::PaypalExpressCheckout.find_by(token: response_code)
+        source = Spree::PaypalExpressCheckout.find_by(transaction_id: response_code)
       end
+
+      Rails.logger.info source
+      Rails.logger.info response_code
 
       if payment.present? and source.can_credit? payment
         refund(nil, payment, payment.money.amount_in_cents)
