@@ -1,4 +1,4 @@
-module PayPal
+module Paypal
   module RefundTransactionResponseTypeDecorator
     def authorization
       self.to_hash[:RefundTransactionID]
@@ -14,4 +14,4 @@ module PayPal
   end
 end
 
-::PayPal::SDK::Merchant::DataTypes::RefundTransactionResponseType.prepend(PayPal::RefundTransactionResponseTypeDecorator)
+::PayPal::SDK::Merchant::DataTypes::RefundTransactionResponseType.prepend(Paypal::RefundTransactionResponseTypeDecorator)
