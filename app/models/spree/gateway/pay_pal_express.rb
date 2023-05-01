@@ -11,6 +11,10 @@ module Spree
     preference :auto_capture, :integer, default: 0
     preference :no_shipping, :integer, default: 0
 
+    def payment_profiles_supported?
+      true
+    end
+
     def supports?(source)
       true
     end
